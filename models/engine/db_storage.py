@@ -2,6 +2,7 @@
 """
 Database storage engine
 """
+
 from sqlalchemy import create_engine
 from models.base_model import Base
 from os import getenv
@@ -13,7 +14,9 @@ from models.place import Place
 from models.review import Review
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-classes = {"User": User, "State": State, "City": City, "Amenity": Amenity, "Place": Place, "Review": Review}
+
+classes = {"User": User, "State": State, "City": City,
+           "Amenity": Amenity, "Place": Place, "Review": Review}
 
 
 class DBStorage:
@@ -23,13 +26,20 @@ class DBStorage:
 
     def __init__(self):
         """instantiate the database storage  instance"""
-        USER = getenv('HBNB_MYSQL_USER')
-        PWD = getenv('HBNB_MYSQL_PWD') 
-        HOST = getenv('HBNB_MYSQL_HOST')
-        DB = getenv('HBNB_MYSQL_DB')
-        ENV = getenv('HBNB_ENV')
-        self.__engine = create_engine(f'mysql+mysqldb://{USER}:{PWD}@{HOST}/{DB}', pool_pre_ping=True)
-        if ENV == 'test':
+        HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
+        HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD') 
+        HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
+        HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
+        HBNB_ENV = getenv('HBNB_ENV')
+
+        self.__engine = create_engine(
+                'mysql+mysqldb://{}:{}@{}/{}'.format(
+                                           HBNB_MYSQL_USER,
+                                           HBNB_MYSQL_PWD,
+                                           HBNB_MYSQL_HOST,
+                                           HBNB_MYSQL_DB
+                                       ), pool_pre_ping=True)
+        if HBNB_ENV == 'test':
             Base.metadata.drop_all(self.__engine) 
 
     def all(self, cls=None):
@@ -50,20 +60,18 @@ class DBStorage:
                     dct[key] = obj
         return dct
 
-        """if cls:
-            query = self.__session.query(cls).all()
-        else:
-            query = self.__session.query(User, City, Amenity, Place, Review).all()
-        for obj in query:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            dct[key] = obj
-        return dct"""
-
     def new(self, obj):
         """
         add the object to the current database session (self.__session)
         """
-        self.__session.add(obj)
+        if obj is not None:
+            try:
+                self.__session.add(obj)
+                self.__session.flush()
+                self.__session.refresh(obj)
+            except Exception as ex:
+                self.__session.rollback()
+                raise ex
     
     def save(self):
         """
@@ -76,12 +84,9 @@ class DBStorage:
         delete from the current database session obj if not None
         """
         if obj is not None:
-            obj_type = type(obj)
-            query = self.__session.query(obj_type).filter_by(id=obj.id).first()
-            if query:
-                self.__session.delete(query)
-                self.__session.commit()
-    
+            self.__session.query(type(obj)).filter(
+                    type(obj).id == obj.id).delete()
+
     def reload(self):
         """
         create all tables in the database (feature of SQLAlchemy)
@@ -90,4 +95,10 @@ class DBStorage:
         """
         Base.metadata.create_all(self.__engine)
         session_reload = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        self.__session = scoped_session(session_reload)
+        self.__session = scoped_session(session_reload)()
+
+    def close(self):
+        """
+        Closes the working database session.
+        """
+        self.__session.close()
