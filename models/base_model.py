@@ -14,9 +14,9 @@ class BaseModel:
         created at: created at time and day for the instance
         updated at: updated when and day for the instance
         """
-    id = Column(String(60), nullable=False, Primary_key=True, unique=True)
+    id = Column(String(60), nullable=False, primary_key=True, unique=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(Datetime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
