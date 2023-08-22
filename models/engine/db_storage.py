@@ -13,7 +13,7 @@ from models.place import Place
 from models.review import Review
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-#classes = [User, State, City, Amenity, Place, Review]
+classes = {"User": User, "State": State, "City": City, "Amenity": Amenity, "Place": Place, "Review": Review}
 
 
 class DBStorage:
@@ -37,14 +37,27 @@ class DBStorage:
         all objects depending of the class name (argument cls)
         """
         dct = {}
-        if cls:
+        if cls is None:
+            for k in classes.values():
+                objct = self.__session.query(k).all()
+                for obj in objct:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    dct[key] = obj
+        else:
+            objct = self.__session.query(cls).all()
+            for obj in objct:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    dct[key] = obj
+        return dct
+
+        """if cls:
             query = self.__session.query(cls).all()
         else:
             query = self.__session.query(User, City, Amenity, Place, Review).all()
         for obj in query:
             key = f"{obj.__class__.__name__}.{obj.id}"
             dct[key] = obj
-        return dct
+        return dct"""
 
     def new(self, obj):
         """
