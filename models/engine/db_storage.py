@@ -30,7 +30,7 @@ class DBStorage:
         ENV = getenv('HBNB_ENV')
         self.__engine = create_engine(f'mysql+mysqldb://{USER}:{PWD}@{HOST}/{DB}', pool_pre_ping=True)
         if ENV == 'test':
-            Base.metadata.drop_all(self.__engine)
+            Base.metadata.drop_all(self.__engine) 
 
     def all(self, cls=None):
         """query on the current database session (self.__session)
@@ -45,7 +45,7 @@ class DBStorage:
             key = f"{obj.__class__.__name__}.{obj.id}"
             dct[key] = obj
         return dct
-    
+
     def new(self, obj):
         """
         add the object to the current database session (self.__session)
@@ -77,4 +77,4 @@ class DBStorage:
         """
         Base.metadata.create_all(self.__engine)
         session_reload = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        self__session = scoped_session(session_reload)()
+        self.__session = scoped_session(session_reload)
