@@ -13,15 +13,17 @@ class FileStorage:
         if cls is None:
             return self.__objects
         cls_name = cls.__name__
-        filtered = {}
-        for key in self.__objects.key():
+        dct = {}
+        for key in self.__objects.keys():
             if key.split('.')[0] == cls_name:
-                filtered[key] = self.__objects[key]
-        return filtered
+                dct[key] = self.__objects[key]
+        return dct
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        self.__objects.update(
+            {obj.to_dict()['__class__'] + '.' + obj.id: obj}
+            )
 
     def save(self):
         """Saves storage dictionary to file"""
@@ -57,11 +59,15 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """
-        Deletes objects from the attribute __objects.
-        """
+        ''' deletes the object obj from the attribute
+            __objects if it's inside it
+        '''
         if obj is None:
-            pass
-        if obj in self.__objects:
-            del self.__objects[obj]
-            self.save()
+            return
+        obj_key = obj.to_dict()['__class__'] + '.' + obj.id
+        if obj_key in self.__objects.keys():
+            del self.__objects[obj_key]
+
+    def close(self):
+        """Call the reload method"""
+        self.reload()
