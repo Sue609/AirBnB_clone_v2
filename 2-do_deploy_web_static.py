@@ -3,7 +3,7 @@
 Fabric script that distributes an archive to your web servers.
 """
 
-from fabric.api import put,env, run, local
+from fabric.api import put, env, run, local
 from os.path import exists
 
 env.host = ['100.25.223.62', '18.204.11.178']
@@ -16,7 +16,7 @@ def do_deploy(archive_path):
     Distribute archieve to web servers.
     """
 
-    if not exists( archive_path):
+    if not exists(archive_path):
         return False
 
     try:
@@ -27,7 +27,7 @@ def do_deploy(archive_path):
         run("mkdir -p {}".format(release_path))
         run("tar -xzf /tmp/{}.tgz -C {}".format(filename, release_path))
 
-        run ("rm /tmp/{}.tgz".format(filename))
+        run("rm /tmp/{}.tgz".format(filename))
 
         run("mv {}/web_static/* {}".format(release_path, release_path))
 
@@ -38,3 +38,5 @@ def do_deploy(archive_path):
         run("ln -s {} /data/web_static/current".format(release_path))
 
         return True
+    except Exception as e:
+        return False
