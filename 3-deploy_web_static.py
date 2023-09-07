@@ -8,7 +8,7 @@ from os.path import exists
 from datetime import datetime
 
 
-env.host = ['100.25.223.62', '18.204.11.178']
+env.hosts = ['100.25.223.62', '18.204.11.178']
 env.user = 'ubuntu'
 env.key_filename = '~/.ssh/private_key'
 
