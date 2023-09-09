@@ -1,32 +1,25 @@
 #!/usr/bin/env bash
-# Bash script that sets up your web servers for the deployment of web_static
+# Bash script that sets up your web servers for the deployment of web_static.
 
-# Update and install nginx if it's not already installed
-if ! dpkg -l | grep -q nginx; then
-    sudo apt-get update
-    sudo apt-get -y install nginx
-fi
+echo -e "\e[1;32m START\e[0m"
 
-# Create necessary directories and index.html file
-sudo mkdir -p /data/web_static/{releases/test,shared}
+apt-get update
+apt-get install -y nginx
 
-# Create a symbolic link
-if [ ! -e /data/web_static/current ]; then
-    sudo ln -s /data/web_static/releases/test /data/web_static/current
-fi
+mkdir -p /data/web_static/releases/test/
+mkdir -p /data/web_static/shared/
 
-# Set ownership
-sudo chown -R ubuntu:ubuntu /data/
+echo "My name is susan." > /data/web_static/releases/test/index.html
 
-config_file="/etc/nginx/sites-available/default"
-if ! grep -q 'location /hbnb_static/' "$config_file"; then
-    sudo sed -i '/server_name _;/a \\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}' "$config_file"
-fi
+ln -sf /data/web_static/releases/test/ /data/web_static/current
+
+chown -R ubuntu /data/
+chgrp -R ubuntu /data/
 
 printf %s "server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    add_header X-Served-By \"$HOSTNAME\";
+    add_header X-Served-By $HOSTNAME;
     root   /var/www/html;
     index  index.html index.htm;
 
@@ -46,6 +39,6 @@ printf %s "server {
     }
 }" > /etc/nginx/sites-available/default
 
-sudo service nginx restart
+echo "Thse script ran seccessfully."
 
-exit 0
+service nginx restart
