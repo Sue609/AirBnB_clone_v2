@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 Fabric script that distributes an archive to your web servers.
 """
@@ -8,7 +7,7 @@ from fabric.api import put, env, run, local
 from os.path import exists
 
 
-env.hosts = ['100.25.223.62', '18.204.11.178']
+env.hosts = ['34.234.204.154', '52.204.104.109']
 env.user = 'ubuntu'
 env.key_filename = '~/.ssh/private_key'
 
