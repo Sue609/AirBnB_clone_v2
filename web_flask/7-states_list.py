@@ -9,15 +9,6 @@ from models.state import State
 app = Flask(__name__)
 
 
-@app.teardown_appcontext
-def close_session(exception):
-    """
-    Function that closes the current SQLAlchemy session
-    after each request.
-    """
-    storage.close()
-
-
 @app.route('/states_list', strict_slashes=False)
 def fetch_data(storage):
     """
@@ -25,6 +16,15 @@ def fetch_data(storage):
     """
     states = storage.all("State")
     return render_template('7-states_list.html', states=states)
+
+
+@app.teardown_appcontext
+def close_session(exception):
+    """
+    Function that closes the current SQLAlchemy session
+    after each request.
+    """
+    storage.close()
 
 
 if __name__ == "__main__":
