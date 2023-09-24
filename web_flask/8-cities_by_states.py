@@ -5,6 +5,7 @@ This module intorduces a new function.
 
 from flask import Flask, render_template
 from models import storage
+from models.state import State
 
 app = Flask(__name__)
 
@@ -14,7 +15,7 @@ def cities_by_states():
     """
     Funxtion that displays a HTML page inside the body tag.
     """
-    states = storage.all("State")
+    states = storage.all(State)
     return render_template("8-cities_by_states.html", states=states)
 
 

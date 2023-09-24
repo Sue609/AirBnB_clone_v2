@@ -8,13 +8,10 @@ from models import storage_type
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.sql.schema import Table
 from sqlalchemy.orm import relationship
-from sqlalchemy import PrimaryKeyConstraint
 
 
 if storage_type == 'db':
-    place_amenity = Table(
-                          'place_amenity',
-                          Base.metadata,
+    place_amenity = Table('place_amenity', Base.metadata,
                           Column('place_id', String(60),
                                  ForeignKey('places.id'),
                                  primary_key=True,
@@ -22,10 +19,8 @@ if storage_type == 'db':
                           Column('amenity_id', String(60),
                                  ForeignKey('amenities.id'),
                                  primary_key=True,
-                                 nullable=False),
-                          PrimaryKeyConstraint('place_id', 'amenity_id')
+                                 nullable=False)
                           )
-
 
 
 class Place(BaseModel, Base):

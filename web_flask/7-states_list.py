@@ -10,16 +10,16 @@ app = Flask(__name__)
 
 
 @app.route('/states_list', strict_slashes=False)
-def fetch_data(storage):
+def fetch_data():
     """
     Function that displays HTML page indise the bodt tag.
     """
-    states = storage.all("State")
+    states = storage.all(State)
     return render_template('7-states_list.html', states=states)
 
 
 @app.teardown_appcontext
-def close_session(exception):
+def close_session(exc):
     """
     Function that closes the current SQLAlchemy session
     after each request.

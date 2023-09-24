@@ -1,9 +1,7 @@
 #!/usr/bin/python3
-"""This module instantiates an object of class FileStorage"""
-from os import getenv
+"""This module instantiates an instance of the Storage will be used"""
 
-#storage = FileStorage()
-#storage.reload()
+from os import getenv
 
 storage_type = getenv('HBNB_TYPE_STORAGE')
 
